@@ -1,16 +1,16 @@
-import express from 'express';
-import type {Request, Response} from "express";
-import bcrypt from 'bcrypt';
-import prisma from '../lib/prisma.js'
+import express from "express";
+import type { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import prisma from "../lib/prisma.js";
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/logout', logout);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
 
 // 회원가입
-async function register (req: Request, res: Response): Promise<Response> {
+async function register(req: Request, res: Response): Promise<Response> {
   try {
     const { email, nickname, password } = req.body as {
       email: string;
@@ -33,29 +33,33 @@ async function register (req: Request, res: Response): Promise<Response> {
     return res.json(userWithoutPassword);
   } catch (err: any) {
     console.error("회원가입 오류:", err);
-    return res.status(500).json({ message: "회원가입 실패", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "회원가입 실패", error: err.message });
   }
 }
 // 로그인
-async function login (req: Request, res: Response): Promise<Response> {
+async function login(req: Request, res: Response): Promise<Response> {
   try {
-    const {email, password} = req.body as {email: string; password: string};
-    
+    const { email, password } = req.body as { email: string; password: string };
+
     if (!email || !password) {
-      return res.status(400).json({ message: "이메일과 비밀번호를 입력하세요." });
+      return res
+        .status(400)
+        .json({ message: "이메일과 비밀번호를 입력하세요." });
     }
 
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if ( !user ) {
-      return res.status(401).json({message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const { password: _, ...userWithoutPassword } = user;
@@ -66,20 +70,21 @@ async function login (req: Request, res: Response): Promise<Response> {
   }
 }
 
-async function logout(req: Request, res: Response): Promise<Response> {
-  try {
-    if (req.session) {
-      req.session.destroy((error) => {
-        if (error) {
-          console.error("세션 삭제 오류:", error);
-        }
-      });
-    }
-    return res.status(200).send();
-  } catch (err: any) {
-    console.error("로그아웃 오류:", err);
-    return res.status(500).json({ message: "로그아웃 실패", error: err.message });
-  }
-}
+// FIXME: 세션방식을 지우고 토큰 방식으로 통일할 것.
+// async function logout(req: Request, res: Response): Promise<Response> {
+// try {
+//   if (req.session) {
+//     req.session.destroy((error) => {
+//       if (error) {
+//         console.error("세션 삭제 오류:", error);
+//       }
+//     });
+//   }
+//   return res.status(200).send();
+// } catch (err: any) {
+//   console.error("로그아웃 오류:", err);
+//   return res.status(500).json({ message: "로그아웃 실패", error: err.message });
+// }
+// }
 
 export default router;

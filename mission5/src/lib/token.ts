@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
-import type { JwtPayload } from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 import {
   JWT_ACCESS_TOKEN_SECRET,
   JWT_REFRESH_TOKEN_SECRET,
-} from '../lib/constants.js';
+} from "../lib/constants.js";
 
 interface TokenPayload extends JwtPayload {
   id: number;
@@ -14,10 +14,10 @@ export function generateTokens(userId: number | string): {
   refreshToken: string;
 } {
   const accessToken = jwt.sign({ id: userId }, JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: '1h',
+    expiresIn: "1h",
   });
   const refreshToken = jwt.sign({ id: userId }, JWT_REFRESH_TOKEN_SECRET, {
-    expiresIn: '7d',
+    expiresIn: "7d",
   });
   return { accessToken, refreshToken };
 }
