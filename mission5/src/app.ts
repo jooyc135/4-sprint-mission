@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 import multer from "multer";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 import articleRoutes from "../src/routes/articleRoutes.js";
 import authRoutes from "../src/routes/authRoutes.js";
@@ -10,6 +11,9 @@ import productRoutes from "../src/routes/productRoutes.js";
 import userRoutes from "../src/routes/users.js";
 
 const app = express();
+
+app.use(cookieParser());
+
 const PORT = 3000;
 
 // ── Multer 설정 ──
@@ -49,7 +53,9 @@ app.use("/users", userRoutes);
 
 // ── 기본 엔드포인트 ──
 app.get("/", (_req: Request, res: Response) => {
-  res.send("중고마켓 API 서버가 정상 실행 중입니다. /products 엔드포인트를 사용하세요.");
+  res.send(
+    "중고마켓 API 서버가 정상 실행 중입니다. /products 엔드포인트를 사용하세요."
+  );
 });
 
 // ── 이미지 업로드 엔드포인트 ──
