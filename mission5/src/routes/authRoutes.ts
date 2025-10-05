@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/logout", logout);
+// router.post("/logout", logout);
 
 // 회원가입
 async function register(req: Request, res: Response): Promise<Response> {
